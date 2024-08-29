@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseAuth
+import Combine
 
 class MainViewViewModel : ObservableObject{
     @Published var currentUserId : String = ""
@@ -16,13 +17,23 @@ class MainViewViewModel : ObservableObject{
         self.handler = Auth.auth().addStateDidChangeListener{ [weak self] _, user in
             DispatchQueue.main.async {
                 self?.currentUserId = user?.uid ?? ""
+                // used for updating currentUser if deleted from firebase.
+//                do{
+//                    try Auth.auth().signOut()
+//                }catch{
+//                    print("Error")
+//                }
             }
         }
     }
     
     public var isSignedIn: Bool{
         
-        print(Auth.auth().currentUser)
+        if let user = Auth.auth().currentUser {
+            print("Current User: \(user)")
+        } else {
+            print("No user is currently signed in.")
+        }
         return Auth.auth().currentUser != nil
     }
 }
